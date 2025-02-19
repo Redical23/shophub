@@ -1,4 +1,3 @@
-// InsightsPageComponent.jsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -30,6 +29,11 @@ ChartJS.register(
 );
 
 export default function InsightsPageComponent() {
+  // Prevent any server-side execution: if window is undefined, return null.
+  if (typeof window === "undefined") {
+    return null;
+  }
+
   const { email } = useModelContext();
   const [user, setUser] = useState(null);
   const [visitStats, setVisitStats] = useState(null);
