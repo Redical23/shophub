@@ -1,6 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// Remove: export const revalidate = 0;
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
+} from "chart.js";
 
 ChartJS.register(
   CategoryScale,
@@ -97,19 +97,21 @@ export default function InsightsPage() {
     );
 
   const chartData = {
-    labels: ['Daily', 'Weekly', 'Monthly', 'Total'],
+    labels: ["Daily", "Weekly", "Monthly", "Total"],
     datasets: [
       {
-        label: 'Profile Views',
-        data: visitStats ? [
-          visitStats.dailyVisits / 2,
-          visitStats.weeklyVisits / 2,
-          visitStats.monthlyVisits / 2,
-          visitStats.totalVisits / 2
-        ] : [],
+        label: "Profile Views",
+        data: visitStats
+          ? [
+              visitStats.dailyVisits / 2,
+              visitStats.weeklyVisits / 2,
+              visitStats.monthlyVisits / 2,
+              visitStats.totalVisits / 2,
+            ]
+          : [],
         fill: false,
-        backgroundColor: 'rgb(75, 192, 192)',
-        borderColor: 'rgba(75, 192, 192, 0.2)',
+        backgroundColor: "rgb(75, 192, 192)",
+        borderColor: "rgba(75, 192, 192, 0.2)",
       },
     ],
   };
@@ -118,11 +120,11 @@ export default function InsightsPage() {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
       },
       title: {
         display: true,
-        text: 'Profile View Statistics',
+        text: "Profile View Statistics",
       },
     },
     scales: {
@@ -146,7 +148,7 @@ export default function InsightsPage() {
           <p className="text-xl mb-2">Name: {user.name}</p>
           <p className="text-xl mb-2">Email: {user.email}</p>
         </div>
-        
+
         <h2 className="text-3xl font-semibold mt-10 mb-6">Profile Insights</h2>
         {visitStats ? (
           <>
@@ -188,7 +190,7 @@ function InsightCard({ title, value, fullWidth = false }) {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      className={`bg-gray-800 rounded-lg p-6 ${fullWidth ? 'col-span-full' : ''}`}
+      className={`bg-gray-800 rounded-lg p-6 ${fullWidth ? "col-span-full" : ""}`}
     >
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
       <p className="text-2xl font-bold">{value}</p>
