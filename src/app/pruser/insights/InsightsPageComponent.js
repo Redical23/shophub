@@ -1,5 +1,10 @@
 "use client";
 
+// Force dynamic client-only rendering and disable pre-rendering
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useModelContext } from "../../context/Context";
@@ -29,7 +34,7 @@ ChartJS.register(
 );
 
 export default function InsightsPageComponent() {
-  // Prevent any server-side execution: if window is undefined, return null.
+  // Prevent any execution on the server/build time.
   if (typeof window === "undefined") {
     return null;
   }
