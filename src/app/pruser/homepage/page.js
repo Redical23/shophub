@@ -1,6 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic"; // Disable static prerendering
-export const revalidate = 0; // No caching – always fetch at runtime
+export const dynamic = "force-dynamic"; // This forces dynamic rendering
 
 import React, { Suspense, useState, useEffect } from "react";
 import { useModelContext } from "../../context/Context";
@@ -21,7 +20,7 @@ function HomepageContent() {
   const filterFromUrl = searchParams.get("filter") || "";
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Wait for hydration before rendering client-only data
+  // Ensure the page is fully hydrated before rendering content
   useEffect(() => {
     setIsHydrated(true);
   }, []);
@@ -70,7 +69,7 @@ function HomepageContent() {
 
   const filters = ["All", "Corporate Law", "Immigration Law", "Family Law", "Criminal Law"];
 
-  // Don't render content until hydration is complete
+  // Prevent rendering until hydration is complete
   if (!isHydrated) return null;
 
   return (
