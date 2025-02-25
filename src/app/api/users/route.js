@@ -72,49 +72,35 @@ console.log(hashedPassword)
 
 
 export async function GET(req) {
-  await dbConnect();
-  
+  const jsonHeaders = { "Content-Type": "application/json" };
+
+  // Helper to create JSON responses
+  const jsonResponse = (data, status = 200) =>
+    new Response(JSON.stringify(data), { status, headers: jsonHeaders });
+
   try {
+    // Connect to the database
+    await dbConnect();
+
     // Extract email from query parameters
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email");
 
     if (!email) {
-      return new Response(
-        JSON.stringify({ error: "Email is required" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      return jsonResponse({ error: "Email is required" }, 400);
     }
 
     // Find the user by email
     const user = await User.findOne({ email });
 
     if (!user) {
-      return new Response(
-        JSON.stringify({ error: "User not found" }),
-        {
-          status: 404,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      return jsonResponse({ error: "User not found" }, 404);
     }
 
     // Return the found user
-    return new Response(JSON.stringify(user), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse(user, 200);
   } catch (error) {
     console.error("Error fetching user:", error);
-    return new Response(
-      JSON.stringify({ error: "Failed to fetch user" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return jsonResponse({ error: "Failed to fetch user" }, 500);
   }
 }

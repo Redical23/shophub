@@ -48,7 +48,7 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#020B2C] to-[#0D1B4A]">
-      <LAHEAD />
+ 
 
       <motion.div
         initial={{ opacity: 0 }}

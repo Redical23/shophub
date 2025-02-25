@@ -1,10 +1,11 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useModelContext } from "../../context/Context";
 
-export default function EmailPage({ params }) {
+export default function EmailPage() {
   const router = useRouter();
+  const params = useParams(); // useParams hook provides the current route parameters
   const { email, setclientemail } = useModelContext();
   const [user, setUser] = useState(null); // to store fetched user data
   const [error, setError] = useState(null);
@@ -86,7 +87,9 @@ export default function EmailPage({ params }) {
   return (
     <div className="flex items-center justify-center h-screen bg-[#001845] p-4 md:p-8">
       <div className="bg-[#001230] p-6 md:p-8 rounded-lg shadow-lg max-w-md w-full">
-        <p className="text-white text-lg md:text-xl text-center">Setting up your chat...</p>
+        <p className="text-white text-lg md:text-xl text-center">
+          Setting up your chat...
+        </p>
       </div>
     </div>
   );

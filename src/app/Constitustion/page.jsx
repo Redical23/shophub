@@ -56,7 +56,7 @@ const Page = () => {
 
   return (
     <div>
-      <LAHEAD />
+    
       <div className="flex justify-center my-4 flex-wrap gap-2">
         <button 
           onClick={showAllCases} 

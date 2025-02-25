@@ -7,11 +7,12 @@ import { ChatInput } from "../component/ChatInput";
 import LAHEAD from "../../slidebar/LAHEAD";
 import { ChatHeader } from "../component/ChatHeader";
 import { initializeSocket, joinRoom, sendMessage } from "../../../lib/socket";
-import Footer from "../../slidebar/FOOTER";
 import { Menu, X } from "lucide-react";
+import dynamic from "next/dynamic";
 
 export default function Page() {
   const { email, currentchat } = useModelContext();
+  const Footer = dynamic(() => import("../../slidebar/FOOTER"), { ssr: false });
   const decodedEmail = email ? decodeURIComponent(email) : null;
   const [messages, setMessages] = useState([]);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -90,7 +91,7 @@ export default function Page() {
 
   return (
     <div className="flex flex-col min-h-screen ">
-      <LAHEAD />
+     
       <main className="flex flex-1 overflow-hidden px-4 py-6 md:px-8 md:py-8">
         <div className="md:hidden mb-4">
           <button

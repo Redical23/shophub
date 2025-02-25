@@ -7,11 +7,20 @@ import loge1 from '../IMAGES/Screenshot 2024-12-29 215027.png'
 import loge2 from '../IMAGES/properaidpic.png'
 import loge3 from '../IMAGES/Screenshot 2024-12-29 215214.png'
 import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, px } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import ImageSlider from './IMAGESLIDER'
 
 const Home = () => {
+  
+  const h1 = "/profile.png"
+  const h2 = "/Benefit.png"
+  const h3 = "/News.png"
+  const h4 = "/Intership.png"
+  const h5 = "/chat.png"
+  const h6 = "/53510.jpg"
+const h7 = "/h7.jpg"
+const h8 = "/h8.png"
   const features = [
     {
       icon: <Zap className="w-8 h-8" />,
@@ -117,8 +126,8 @@ const Home = () => {
             <div className="hidden md:flex space-x-4">
               <button className="text-white hover:text-gray-300">How It Works</button>
               <button className="text-white hover:text-gray-300">Practice Areas</button>
-              <button className="text-white hover:text-gray-300">About Us</button>
-              <button className="text-white hover:text-gray-300">Contact</button>
+              <button  onClick={() => router.push("/about")} className="text-white hover:text-gray-300">About Us</button>
+              <button  onClick={() => router.push("/contact")} className="text-white hover:text-gray-300">Contact</button>
             </div>
             <div className="flex space-x-2">
               {status === "loading" ? (
@@ -154,7 +163,7 @@ const Home = () => {
             </div>
             <div className="md:w-1/2 flex justify-center">
               <Image
-                src={loge3}
+                src={h8}
                 alt="Lawyer consultation illustration"
                 width={400}
                 height={400}
@@ -172,14 +181,14 @@ const Home = () => {
               <p>PROPER AID IS A SIDE With its aim of simplifying the recruitment and hiring process for any legal professional, the company enables users to browse an authentic database of lawyers; by expertise, location, and case type. Moreover, detailed lawyer profiles involve qualifications, experience, rating, and reviews. Features include direct communication options available for quick consultations via chatting, calling, or emails. The interface is easily understandable to book appointments for law experts or hire them regarding any specific legal needs as this will ensure a flawless and trustworthy user experience.</p>
             </div>
             <div className='image-box1'>
-              <Image src={loge3} className='box1image' alt="" />
+              <Image src={h7}   width={500} height={300}   className='box1image' alt="" />
             </div>
           </div>
         </div>
         <div className='box1'>
           <div className='contentaid'>
             <div className='image-box1'>
-              <Image src={loge3} className='box1image' alt="" />
+              <Image src={h6}  width={500} height={200}  className='box1image' alt="" />
             </div>
             <div className='content1'>
               <h1>HOW TO USE IT?</h1>
@@ -195,31 +204,31 @@ Direct Contact Option: Some lawyers also provide their phone numbers, giving you
         <div className='contentitem'>
           <h2>Features</h2>
           <div className="contentitem-item">
-            <img src="https://via.placeholder.com/100" alt="Hire a Lawyer" />
+            <img src={h1} alt="Hire a Lawyer" />
             <div>
               <p><span>"Hire a Lawyer"</span> feature description: With its aim of simplifying the recruitment and hiring process for any legal professional, the company enables users to browse an authentic database of lawyers by expertise, location, and case type. Moreover, detailed lawyer profiles involve qualifications, experience, rating, and reviews.</p>
             </div>
           </div>
           <div className="contentitem-item">
-            <img src="https://via.placeholder.com/100" alt="Chat" />
+            <img src={h5} alt="Chat" />
             <div>
               <p><span>Chat:</span> Our website aims to provide users with a convenient and reliable way to connect with lawyers. This platform helps users find the right lawyer for their legal matters and communicate with them effortlessly.</p>
             </div>
           </div>
           <div className="contentitem-item">
-            <img src="https://via.placeholder.com/100" alt="Benefits" />
+            <img src={h2} alt="Benefits" />
             <div>
               <p><span>Benefits:</span> Saves time and effort. Enables users to connect with lawyers from anywhere. Provides reliable and expert legal assistance. This platform offers users transparent, accessible, and secure legal services through a digital medium.</p>
             </div>
           </div>
           <div className="contentitem-item">
-            <img src="https://via.placeholder.com/100" alt="News" />
+            <img src={h3} alt="News" />
             <div>
               <p><span>News:</span> Our website is designed to serve as a comprehensive platform for lawyers and legal professionals, providing access to all legal news and updates. Benefits: Stay informed with the latest legal news and gain quick access to critical information.</p>
             </div>
           </div>
           <div className="contentitem-item">
-            <img src="https://via.placeholder.com/100" alt="Internship" />
+            <img src={h4} alt="Internship" />
             <div>
               <p><span>Internship:</span> Our website aims to provide a platform for lawyers and law students where young individuals and students can access internship opportunities. This feature is designed to promote professional growth in the legal field.</p>
             </div>

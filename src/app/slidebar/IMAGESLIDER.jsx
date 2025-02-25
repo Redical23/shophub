@@ -3,23 +3,29 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+// Option 1: If your image is located in the public folder, reference it directly:
+const s1 = "/s1.png";
+const s2 = "/s2.png"
+// Option 2: If you prefer to import the image, ensure the file path is correct and matches the folder name & case.
+// import s1 from "../IMAGES/s1.png";
+
 const images = [
   {
-    url: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&w=1600&h=900&q=80",
+    url: s1,
     alt: "Modern workspace with laptop"
   },
   {
-    url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&h=900&q=80",
+    url: s2,
     alt: "Team collaboration"
   },
-  {
-    url: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1600&h=900&q=80",
-    alt: "Office workspace"
-  },
-  {
-    url: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&h=900&q=80",
-    alt: "Technology and workspace"
-  }
+  // {
+  //   url: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1600&h=900&q=80",
+  //   alt: "Office workspace"
+  // },
+  // {
+  //   url: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&h=900&q=80",
+  //   alt: "Technology and workspace"
+  // }
 ];
 
 function ImageSlider() {

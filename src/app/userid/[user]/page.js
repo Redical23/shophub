@@ -1,37 +1,47 @@
-import { MongoClient, ObjectId } from "mongodb";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import LAHEAD from "../../slidebar/LAHEAD";
 import { ArrowLeft, Star, Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
 import TrackVisit from "../../slidebar/TrackVisit";
 import Footer from "../../slidebar/FOOTER";
 
-// Implement connection pooling by caching the client and database instance
-let cachedClient = null;
-let cachedDb = null;
+export default function LawyerProfilePage() {
+  const { user } = useParams(); // dynamic route parameter (expected to be the user's _id)
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-async function connectToDatabase() {
-  if (cachedClient && cachedDb) {
-    return { client: cachedClient, db: cachedDb };
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        // Call the API endpoint using the id query parameter
+        const res = await fetch(`/api/pto?id=${user}`, {
+          headers: { Accept: "application/json" }
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        // The response is expected to be a single user object
+        const data = await res.json();
+        setUserData(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUserData();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#020B2C] text-white flex items-center justify-center">
+        <h1 className="text-2xl font-bold">Loading...</h1>
+      </div>
+    );
   }
-  if (!process.env.MONGODB_URI) {
-    throw new Error("Please define the MONGODB_URI environment variable");
-  }
-  const client = await MongoClient.connect(process.env.MONGODB_URI);
-  const db = client.db();
-  cachedClient = client;
-  cachedDb = db;
-  return { client, db };
-}
-
-async function getUserData(id) {
-  const { db } = await connectToDatabase();
-  const user = await db.collection("users").findOne({ _id: new ObjectId(id) });
-  return user;
-}
-
-export default async function LawyerProfilePage({ params }) {
-  const { user } = params;
-  const userData = await getUserData(user);
 
   if (!userData) {
     return (
@@ -41,24 +51,40 @@ export default async function LawyerProfilePage({ params }) {
     );
   }
 
-  // Convert to a plain object to remove non-plain fields (like ObjectId with toJSON methods)
-  const safeUserData = JSON.parse(JSON.stringify(userData));
-  const { name, email, yearsexp, charge, rating, avatar, recentCases, bio, areasOfPractice, location, phone } = safeUserData;
-  
+  const {
+    name,
+    email,
+    yearsexp,
+    charge,
+    rating,
+    avatar,
+    recentCases,
+    bio,
+    areasOfPractice,
+    location,
+    phone
+  } = userData;
+
   return (
     <div>
       <TrackVisit userId={user} />
-      <LAHEAD />
+      
       <div className="min-h-screen bg-[#020B2C] text-white p-8 flex flex-col items-center">
-        <Link href="/pruser/homepage" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-6">
+        <Link
+          href="/pruser/homepage"
+          className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-6"
+        >
           <ArrowLeft className="mr-2 h-5 w-5" /> Back to Profiles
         </Link>
-
         <div className="w-full max-w-4xl grid md:grid-cols-3 gap-6">
           {/* Left Column - Profile Info */}
           <div className="md:col-span-1 bg-white/10 backdrop-blur p-6 rounded-lg shadow-lg">
             <div className="flex flex-col items-center text-center">
-              <img src={avatar} alt="User avatar" className="w-32 h-32 rounded-full mb-4 border-4 border-blue-500 shadow-lg" />
+              <img
+                src={avatar}
+                alt="User avatar"
+                className="w-32 h-32 rounded-full mb-4 border-4 border-blue-500 shadow-lg"
+              />
               <h1 className="text-2xl font-bold">{name}</h1>
               <div className="flex items-center gap-2 mt-2 text-yellow-400">
                 <Star className="h-5 w-5" /> <span>{rating}</span>
@@ -67,7 +93,10 @@ export default async function LawyerProfilePage({ params }) {
                 <p>{yearsexp} Years Experience</p>
                 <p className="font-semibold">${charge}/hour</p>
               </div>
-              <Link href={`/lawyer/${email}`} className="mt-4 w-full bg-blue-600 hover:bg-blue-700 py-2 rounded text-white font-semibold text-center">
+              <Link
+                href={`/lawyer/${email}`}
+                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 py-2 rounded text-white font-semibold text-center"
+              >
                 Schedule Consultation
               </Link>
               <div className="space-y-3 mt-6 text-sm">
@@ -83,14 +112,12 @@ export default async function LawyerProfilePage({ params }) {
               </div>
             </div>
           </div>
-
           {/* Right Column - Details */}
           <div className="md:col-span-2 flex flex-col gap-6">
             <div className="bg-white/10 p-6 rounded-lg shadow-lg backdrop-blur">
               <h2 className="text-xl font-semibold mb-4">About Me</h2>
               <p className="text-gray-300">{bio}</p>
             </div>
-
             <div className="bg-white/10 p-6 rounded-lg shadow-lg backdrop-blur">
               <h2 className="text-xl font-semibold mb-4">Specializations</h2>
               {areasOfPractice && areasOfPractice.length > 0 ? (
@@ -103,7 +130,6 @@ export default async function LawyerProfilePage({ params }) {
                 <p className="text-gray-300">No areas of practice available.</p>
               )}
             </div>
-
             <div className="bg-white/10 p-6 rounded-lg shadow-lg backdrop-blur">
               <h2 className="text-xl font-semibold mb-4">Work Experience</h2>
               {recentCases && recentCases.length > 0 ? (

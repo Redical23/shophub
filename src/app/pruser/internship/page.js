@@ -79,7 +79,7 @@ function InternshipFeed() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#00103a] to-[#001a5e]">
-      <LAHEAD />
+   
       <motion.div 
         initial="hidden"
         animate="visible"

@@ -47,9 +47,11 @@ function HomepageContent() {
       .then((response) => response.json())
       .then((data) => {
         // Handle different API response structures:
-        const userData = data.users || data;
-        setUsers(userData);
-        const totalCount = data.total || (Array.isArray(data) ? data.length : 0);
+        const allUsers = data.users || data;
+        // Filter on the client side to include only users with islaywer set to true
+        const filteredUsers = allUsers.filter((user) => user.islaywer === true);
+        setUsers(filteredUsers);
+        const totalCount = data.total || filteredUsers.length;
         setTotalPages(Math.ceil(totalCount / usersPerPage));
       })
       .catch((error) => console.error("Error fetching users:", error));
@@ -60,7 +62,6 @@ function HomepageContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#020B2C] to-[#0D1B4A]">
-      <LAHEAD />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
