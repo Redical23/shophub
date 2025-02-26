@@ -11,6 +11,7 @@ export async function middleware(req) {
     pathname.startsWith('/api/') || // Exclude /api/ paths
     pathname === '/' ||
     pathname === '/Login' ||
+    pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|css|js)$/) ||
     pathname === '/Register' ||
     pathname === '/about' ||
     pathname === '/termsofservice' ||
