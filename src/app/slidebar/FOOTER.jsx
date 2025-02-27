@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 
 const Footer = () => {
   const router = useRouter();
+    const loge2 = "/properaidpic.png"
 
   const handleFilterClick = (filter) => {
     router.push(`/pruser/homepage?filter=${filter}`);
@@ -42,10 +43,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <motion.div className="text-center md:text-left" variants={itemVariants}>
             <Image
-              src="/IMAGES/propersid.png"
+              src={loge2}
               alt="ProperAid Logo"
-              width={150}
-              height={50}
+              width={105}
+              height={25}
               className="mb-3 mx-auto md:mx-0"
             />
             <h3 className="text-xl font-semibold text-white mb-2">ProperAid</h3>

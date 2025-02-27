@@ -63,7 +63,7 @@ export default function SettingsPage() {
       const res = await fetch("/api/payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, email: "user@example.com", plan }),
+        body: JSON.stringify({ amount, email: email, plan }),
       });
 
       const order = await res.json();
@@ -73,14 +73,36 @@ export default function SettingsPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount,
         currency: "INR",
-        name: "Your App Name",
+        name: "Proper Aid",
         description: "Subscription Payment",
         order_id: order.id,
-        handler: (response) => {
+        handler: async (response) => {
           alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+          
+          // Calculate the expiry date (30 days from now)
+          const expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+          
+          // Update the user's subscription status and expiry date
+          try {
+            const updateRes = await fetch("/api/users/updateSubscription", {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email,
+                subscribe: true,
+                subscriptionExpiry: expiryDate,
+              }),
+            });
+            const updateData = await updateRes.json();
+            if (!updateRes.ok) throw new Error(updateData.error || "Failed to update subscription");
+            alert("Subscription activated successfully!");
+          } catch (error) {
+            console.error("Subscription update failed:", error);
+            alert("Payment succeeded, but subscription update failed.");
+          }
           setLoading(false);
         },
-        prefill: { name: "User Name", email: "user@example.com", contact: "9999999999" },
+        prefill: { name: "User Name", email: email, contact: "9999999999" },
         theme: { color: "#3399cc" },
       };
 

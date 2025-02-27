@@ -66,6 +66,7 @@ const UserSchema = new mongoose.Schema(
     resetPasswordExpires: { type: Date },
     admin: { type: Boolean, default: false }, 
     islaywer: { type: Boolean, default: false }
+    
   },
   { timestamps: true }
 );

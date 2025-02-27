@@ -3,16 +3,14 @@ import React, { useEffect, useState } from 'react'
 import SIGNOUT from '../signinout/SIGNOUT'
 import Image from 'next/image'
 import { Zap, Users, DollarSign, Wallet, Clock, UserCog, Search } from 'lucide-react'
-import loge1 from '../IMAGES/Screenshot 2024-12-29 215027.png'
-import loge2 from '../IMAGES/properaidpic.png'
-import loge3 from '../IMAGES/Screenshot 2024-12-29 215214.png'
+
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence, px } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import ImageSlider from './IMAGESLIDER'
 
 const Home = () => {
-  
+  const loge2 = "/properaidpic.png"
   const h1 = "/profile.png"
   const h2 = "/Benefit.png"
   const h3 = "/News.png"
@@ -124,7 +122,7 @@ const h8 = "/h8.png"
               <span className="text-2xl font-bold">ProperAid</span>
             </div>
             <div className="hidden md:flex space-x-4">
-              <button onClick={() => router.push("/termsofservice")} className="text-white hover:text-gray-300">terms and service</button>
+              <button onClick={() => router.push("/termsofservice")} className="text-white hover:text-gray-300">Terms and Service</button>
               <button onClick={() => router.push("/privacypolicy")} className="text-white hover:text-gray-300">Privacy policy</button>
               <button  onClick={() => router.push("/about")} className="text-white hover:text-gray-300">About Us</button>
               <button  onClick={() => router.push("/contact")} className="text-white hover:text-gray-300">Contact</button>
