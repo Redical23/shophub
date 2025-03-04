@@ -17,6 +17,8 @@ export default function Page() {
   const [messages, setMessages] = useState([]);
   const [showSidebar, setShowSidebar] = useState(false);
   const socketRef = useRef(null);
+  const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   // Use a ref to always have the latest currentchat value
   const currentChatRef = useRef(currentchat);
@@ -54,6 +56,7 @@ export default function Page() {
     const room = `${decodedEmail}_${currentchat}`;
     joinRoom(room);
 
+    let isMounted = true;
     const fetchMessages = async () => {
       try {
         const res = await fetch(
@@ -63,13 +66,22 @@ export default function Page() {
           { cache: "no-store" }
         );
         const data = await res.json();
-        if (res.ok) {
-          setMessages(data.messages || []);
-        } else {
+        if (res.ok && isMounted) {
+          // Compare messages to avoid unnecessary re-renders
+          setMessages(prevMessages => {
+            if (prevMessages.length === data.messages?.length && 
+                JSON.stringify(prevMessages) === JSON.stringify(data.messages)) {
+              return prevMessages;
+            }
+            return data.messages || [];
+          });
+        } else if (isMounted) {
           console.error("Error fetching messages:", data.error);
         }
       } catch (err) {
-        console.error("Failed to fetch messages:", err);
+        if (isMounted) {
+          console.error("Failed to fetch messages:", err);
+        }
       }
     };
 
@@ -79,7 +91,10 @@ export default function Page() {
     const intervalId = setInterval(fetchMessages, 3000);
 
     // Cleanup interval when the component unmounts or dependencies change.
-    return () => clearInterval(intervalId);
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
   }, [decodedEmail, currentchat]);
 
   // Handle sending messages.
@@ -111,8 +126,54 @@ export default function Page() {
     [currentchat, decodedEmail]
   );
 
+  // Maintain scroll position during re-renders
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
+  }, [messages, scrollToBottom]);
+
+  // Preserve scroll position during polling updates
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+    if (!chatContainer) return;
+
+    let prevScrollHeight = chatContainer.scrollHeight;
+    let prevScrollTop = chatContainer.scrollTop;
+    let prevClientHeight = chatContainer.clientHeight;
+    let wasAtBottom = prevScrollTop + prevClientHeight >= prevScrollHeight - 10;
+
+    const observer = new MutationObserver(() => {
+      const newScrollHeight = chatContainer.scrollHeight;
+      
+      if (newScrollHeight !== prevScrollHeight) {
+        if (wasAtBottom) {
+          // If user was at bottom, keep them at bottom
+          chatContainer.scrollTop = newScrollHeight;
+        } else {
+          // Otherwise maintain relative scroll position
+          chatContainer.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
+        }
+        
+        prevScrollHeight = newScrollHeight;
+        prevScrollTop = chatContainer.scrollTop;
+        prevClientHeight = chatContainer.clientHeight;
+        wasAtBottom = prevScrollTop + prevClientHeight >= prevScrollHeight - 10;
+      }
+    });
+
+    observer.observe(chatContainer, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [currentchat]);
+
   return (
-    <div className="flex flex-col min-h-screen ">
+    <div className="flex flex-col min-h-screen">
       <main className="flex flex-1 overflow-hidden px-4 py-6 md:px-8 md:py-8">
         <div className="md:hidden mb-4">
           <button
@@ -130,22 +191,29 @@ export default function Page() {
             <div className="flex flex-col flex-1">
               <ChatHeader />
               <div
+                ref={chatContainerRef}
                 className="flex-1 overflow-y-auto p-4 space-y-4"
-                style={{ maxHeight: "calc(100vh - 250px)" }}
+                style={{ 
+                  maxHeight: "calc(100vh - 250px)",
+                  overscrollBehavior: "contain" 
+                }}
               >
                 {messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full text-gray-500">
                     <p>No messages yet. Start a conversation!</p>
                   </div>
                 ) : (
-                  messages.map((message, index) => (
-                    <ChatMessage
-                      key={message.id || message._id || `${message.timestamp}-${index}`}
-                      content={message.content}
-                      timestamp={message.timestamp}
-                      isSent={message.from === decodedEmail}
-                    />
-                  ))
+                  <>
+                    {messages.map((message, index) => (
+                      <ChatMessage
+                        key={message.id || message._id || `${message.timestamp}-${index}`}
+                        content={message.content}
+                        timestamp={message.timestamp}
+                        isSent={message.from === decodedEmail}
+                      />
+                    ))}
+                    <div ref={messagesEndRef} />
+                  </>
                 )}
               </div>
               <ChatInput onSendMessage={handleSendMessage} />
@@ -164,4 +232,3 @@ export default function Page() {
     </div>
   );
 }
-  

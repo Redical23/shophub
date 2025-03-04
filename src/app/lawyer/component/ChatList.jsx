@@ -10,7 +10,7 @@ export const ChatList = () => {
   const [clients, setClients] = useState([]); // Holds clients with their data
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const decodedEmail = decodeURIComponent(email);
   useEffect(() => {
     if (!email) {
       console.warn("Email is not available in context");
@@ -20,7 +20,7 @@ export const ChatList = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/message?lawyer=${encodeURIComponent(email)}`);
+        const res = await fetch(`/api/message?lawyer=${encodeURIComponent(decodedEmail)}`);
         if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
         const data = await res.json();
         console.log("🚀 Clients data received:", data);

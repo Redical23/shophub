@@ -49,9 +49,13 @@ function HomepageContent() {
         // Handle different API response structures:
         const allUsers = data.users || data;
         // Filter on the client side to include only users with islaywer set to true
-        const filteredUsers = allUsers.filter((user) => user.islaywer === true);
-        setUsers(filteredUsers);
-        const totalCount = data.total || filteredUsers.length;
+        const lawyers = allUsers.filter((user) => user.islaywer === true);
+        // Sort so that users with subscribe true come first
+        const sortedLawyers = [...lawyers].sort((a, b) => {
+          return (b.subscribe ? 1 : 0) - (a.subscribe ? 1 : 0);
+        });
+        setUsers(sortedLawyers);
+        const totalCount = data.total || sortedLawyers.length;
         setTotalPages(Math.ceil(totalCount / usersPerPage));
       })
       .catch((error) => console.error("Error fetching users:", error));

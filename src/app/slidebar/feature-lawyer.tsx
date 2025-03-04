@@ -69,7 +69,7 @@ console.log(currentLawyer,"sd")
             <div className="bg-[#162447] p-4 rounded-lg text-center shadow-md">
               <div className="text-2xl font-bold text-[#FFD700]"> {currentLawyer.location && typeof currentLawyer.location === "string" 
       ? currentLawyer.location 
-      : "Location Not Available"}</div>
+      : "N/A"}</div>
               <div className="text-sm text-[#E0E7FF]">Location</div>
             </div>
             <div className="bg-[#162447] p-4 rounded-lg text-center shadow-md">

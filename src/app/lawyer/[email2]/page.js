@@ -12,7 +12,7 @@ export default function EmailPage() {
 
   console.log("🚀 EmailPage Mounted");
   console.log("🔍 Params:", params);
-
+  const decodedEmail = decodeURIComponent(email);
   const email2 = params?.email2 ? decodeURIComponent(params.email2) : null;
   console.log("📩 Extracted email2:", email2);
 
@@ -46,7 +46,7 @@ export default function EmailPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          from: email,
+          from: decodedEmail,
           to: email2,
           content: messageContent,
           avatar: avatar,

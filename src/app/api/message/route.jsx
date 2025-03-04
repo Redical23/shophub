@@ -56,6 +56,9 @@ export async function POST(req) {
     let conversation = await Conversation.findOne({
       participants: { $all: [from, to] },
     });
+    let conversation2 = await Conversation.findOne({
+      participants: { $all: [to, from] },
+    });
 
     // Create a new conversation if none exists
     if (!conversation) {
@@ -66,7 +69,15 @@ export async function POST(req) {
         messages: [],
       });
     }
-
+    if (!conversation2) {
+      conversation = new Conversation({
+        participants: [to, from],
+        avatar: avatar || "/images/default-avatar.png", // Default avatar if none provided
+        username: username || "Client", // Default username if none provided
+        messages: [],
+      });
+    }
+    
     // Create a new message object
     const newMessage = {
       from,

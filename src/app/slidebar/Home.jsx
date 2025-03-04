@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import SIGNOUT from '../signinout/SIGNOUT'
 import Image from 'next/image'
 import { Zap, Users, DollarSign, Wallet, Clock, UserCog, Search } from 'lucide-react'
-
+import Sponsors from "./sponsors"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence, px } from 'framer-motion'
 import { useSession } from 'next-auth/react'
@@ -11,7 +11,7 @@ import ImageSlider from './IMAGESLIDER'
 
 const Home = () => {
   const loge2 = "/properaidpic.png"
-  const h1 = "/profile.png"
+  const h1 = "/profile.png" 
   const h2 = "/Benefit.png"
   const h3 = "/News.png"
   const h4 = "/Intership.png"
@@ -270,6 +270,11 @@ Direct Contact Option: Some lawyers also provide their phone numbers, giving you
                 </motion.div>
               ))}
             </motion.div>
+            <div className="flex flex-col items-center space-x-2 text-lg font-bold text-gray-700">
+  <span className="text-blue-600">Sponsored by</span>
+  <Sponsors />
+</div>
+
           </div>
         </section>
       </div>
