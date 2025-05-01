@@ -12,7 +12,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
+     const loge2 = "/c1.png"
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -60,7 +60,7 @@ const Register = () => {
       <div className="relative hidden w-1/2 lg:block">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-500/20 to-blue-500/10">
           <Image
-            src="/path-to-your-image.jpg" // Update with your image path
+            src={loge2}  // Update with your image path
             alt="Adventure awaits"
             layout="fill"
             className="object-cover"
@@ -68,10 +68,8 @@ const Register = () => {
           />
         </div>
         <div className="relative z-10 p-8">
-          <h1 className="text-2xl font-semibold text-white">Traveluto Tours</h1>
-          <p className="mt-2 text-sm text-white/90">
-            Begin your journey with us today
-          </p>
+        <h1 className="text-2xl font-semibold text-white">Kanoonikarwayahi</h1>
+        <p className="mt-2 text-sm text-white/90">coming soon.</p>
         </div>
       </div>
 

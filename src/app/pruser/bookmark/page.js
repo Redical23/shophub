@@ -82,7 +82,7 @@ export default function BookmarkPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#020B2C] to-[#0D1B4A]">
-      <LAHEAD />
+     
       <div className="container flex-col mx-auto px-4 py-12">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}

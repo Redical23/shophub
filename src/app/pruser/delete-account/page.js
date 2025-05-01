@@ -34,7 +34,7 @@ const DeleteAccount = () => {
       }
 
       alert("Account deleted successfully!");
-      router.push("/login");
+      router.push("/Login");
     } catch (err) {
       setError(err.message);
     } finally {

@@ -540,7 +540,7 @@ const Page = () => {
           <div className="flex justify-end space-x-4">
             <button
               type="button"
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/pruser/profile")}
               className="p-2 border border-gray-300 rounded bg-white text-gray-700"
             >
               Cancel
