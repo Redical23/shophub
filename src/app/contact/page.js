@@ -50,7 +50,7 @@ export default function ContactPage() {
                   id="firstName"
                   name="firstName"
                   type="text"
-                  placeholder="Ari"
+                  placeholder="Enter your First name"
                   required
                   className="w-full border-0 border-b border-gray-300 bg-transparent px-0 py-3 text-gray-800 placeholder-gray-400 focus:border-gray-600 focus:outline-none"
                 />
@@ -148,8 +148,8 @@ export default function ContactPage() {
           {/* Email Contact */}
           <div className="mt-16 pt-8 border-t border-gray-300">
             <p className="text-sm font-medium text-gray-600 uppercase tracking-wide mb-2">Email Us</p>
-            <a href="mailto:gfhkhihhi@gmail.com" className="text-gray-800 hover:text-gray-600 transition-colors">
-              gfhkhihhi@gmail.com
+            <a href="mailto:kanoonikarwayahi@gmail.com" className="text-gray-800 hover:text-gray-600 transition-colors">
+              kanoonikarwayahi@gmail.com
             </a>
           </div>
         </div>
