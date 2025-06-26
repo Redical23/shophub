@@ -13,6 +13,8 @@ export default function ConstitutionDetailClient({ userData }) {
   const [editData, setEditData] = useState(userData || {})
   const [loading, setLoading] = useState(false)
 
+  console.log(userData, "userData details")
+
   // Check admin status
   useEffect(() => {
     if (email) {
@@ -29,7 +31,8 @@ export default function ConstitutionDetailClient({ userData }) {
   // Update editData when userData changes
   useEffect(() => {
     if (userData) {
-      setEditData(userData)
+      console.log("Setting editData from userData:", userData)
+      setEditData({ ...userData })
     }
   }, [userData])
 
@@ -46,7 +49,7 @@ export default function ConstitutionDetailClient({ userData }) {
 
       if (response.ok) {
         alert("Document deleted successfully!")
-        router.push("/constitution") // Redirect to constitution list page
+        router.push("/constitution")
       } else {
         const error = await response.json()
         alert(`Failed to delete document: ${error.error}`)
@@ -64,6 +67,7 @@ export default function ConstitutionDetailClient({ userData }) {
   }
 
   const handleSave = async () => {
+    console.log("Saving editData:", editData)
     setLoading(true)
     try {
       const response = await fetch(`/api/consitution?id=${userData._id}`, {
@@ -74,14 +78,18 @@ export default function ConstitutionDetailClient({ userData }) {
         body: JSON.stringify(editData),
       })
 
+      console.log("Response status:", response.status)
+
       if (response.ok) {
-        const updatedData = await response.json()
+        const result = await response.json()
+        console.log("Save successful:", result)
         alert("Document updated successfully!")
         setIsEditing(false)
-        // You might want to refresh the page or update the userData prop
+        // Instead of reloading, update the userData prop or refetch
         window.location.reload()
       } else {
         const error = await response.json()
+        console.error("Save failed:", error)
         alert(`Failed to update document: ${error.error}`)
       }
     } catch (error) {
@@ -93,15 +101,47 @@ export default function ConstitutionDetailClient({ userData }) {
   }
 
   const handleCancel = () => {
-    setEditData(userData)
+    console.log("Canceling edit, resetting to:", userData)
+    setEditData({ ...userData })
     setIsEditing(false)
   }
 
   const handleInputChange = (field, value) => {
-    setEditData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
+    console.log(`Updating field: ${field} with value:`, value)
+    setEditData((prev) => {
+      const updated = {
+        ...prev,
+        [field]: value,
+      }
+      console.log("Updated editData:", updated)
+      return updated
+    })
+  }
+
+  const handleImportanceChange = (index, value) => {
+    const updated = [...(editData.importance || [])]
+    updated[index] = value
+    handleInputChange("importance", updated)
+  }
+
+  const addJudgmentItem = () => {
+    const updated = [...(editData.judgment || []), ""]
+    handleInputChange("judgment", updated)
+  }
+
+  const removeJudgmentItem = (index) => {
+    const updated = (editData.judgment || []).filter((_, i) => i !== index)
+    handleInputChange("judgment", updated)
+  }
+
+  const addImportanceItem = () => {
+    const updated = [...(editData.importance || []), ""]
+    handleInputChange("importance", updated)
+  }
+
+  const removeImportanceItem = (index) => {
+    const updated = (editData.importance || []).filter((_, i) => i !== index)
+    handleInputChange("importance", updated)
   }
 
   if (!userData) {
@@ -125,31 +165,49 @@ export default function ConstitutionDetailClient({ userData }) {
               <div className="flex justify-between items-start">
                 <div className="space-y-4">
                   <h1 className="text-2xl sm:text-3xl font-bold">
-                    Application No:{" "}
                     {isEditing ? (
                       <input
                         type="text"
-                        value={editData.applicationNo || ""}
-                        onChange={(e) => handleInputChange("applicationNo", e.target.value)}
-                        className="bg-slate-700 text-white px-2 py-1 rounded border border-slate-600"
+                        value={editData.name || ""}
+                        onChange={(e) => handleInputChange("name", e.target.value)}
+                        className="bg-slate-700 text-white px-2 py-1 rounded border border-slate-600 w-full"
+                        placeholder="Case Name"
                       />
                     ) : (
-                      userData.applicationNo
+                      userData.name || "Case Name"
                     )}
                   </h1>
-                  <p className="text-slate-300">
-                    Filed on:{" "}
-                    {isEditing ? (
-                      <input
-                        type="date"
-                        value={editData.fileddate || ""}
-                        onChange={(e) => handleInputChange("fileddate", e.target.value)}
-                        className="bg-slate-700 text-white px-2 py-1 rounded border border-slate-600 ml-2"
-                      />
-                    ) : (
-                      userData.fileddate || "N/A"
-                    )}
-                  </p>
+                  {userData.alsoKnownAs && (
+                    <p className="text-slate-300 text-lg">
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={editData.alsoKnownAs || ""}
+                          onChange={(e) => handleInputChange("alsoKnownAs", e.target.value)}
+                          className="bg-slate-700 text-white px-2 py-1 rounded border border-slate-600"
+                          placeholder="Also Known As"
+                        />
+                      ) : (
+                        userData.alsoKnownAs
+                      )}
+                    </p>
+                  )}
+                 {(userData["Equivalent citations"] || editData["Equivalent citations"] || isEditing) && (
+                    <p className="text-slate-300 text-lg">
+                      <span className="font-semibold">Equivalent Citations: </span>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={editData["Equivalent citations"] || ""}
+                          onChange={(e) => handleInputChange("Equivalent citations", e.target.value)}
+                          className="bg-slate-700 text-white px-2 py-1 rounded border border-slate-600 ml-2"
+                          placeholder="e.g., AIR 1993 SC 477"
+                        />
+                      ) : (
+                        editData["Equivalent citations"] || userData["Equivalent citations"]
+                      )}
+                    </p>
+                  )}
                 </div>
 
                 {/* Admin Action Buttons */}
@@ -197,150 +255,164 @@ export default function ConstitutionDetailClient({ userData }) {
 
             {/* Main Content */}
             <div className="p-6 sm:p-8 space-y-8">
-              {/* Court Information */}
+              {/* Case Details Section */}
               <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Court Information</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-500">Court No</p>
+                <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Case Details</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-slate-700 mb-2">Bench Composition</h3>
                     {isEditing ? (
                       <input
                         type="text"
-                        value={editData.courtNo || ""}
-                        onChange={(e) => handleInputChange("courtNo", e.target.value)}
+                        value={editData.bench || ""}
+                        onChange={(e) => handleInputChange("bench", e.target.value)}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     ) : (
-                      <p className="text-base font-medium">{userData.courtNo || "N/A"}</p>
+                      <p className="text-slate-600">{userData.bench || "N/A"}</p>
                     )}
                   </div>
-                  <div>
-                    <p className="text-sm text-slate-500">Delivered Date</p>
-                    {isEditing ? (
-                      <input
-                        type="date"
-                        value={editData.Delivereddate || ""}
-                        onChange={(e) => handleInputChange("Delivereddate", e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    ) : (
-                      <p className="text-base font-medium">{userData.Delivereddate || "N/A"}</p>
-                    )}
-                  </div>
-                </div>
-              </section>
-
-              {/* Parties Information */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Parties Information</h2>
-                <div className="grid grid-cols-1 gap-4">
                   <div className="bg-slate-50 p-4 rounded-lg">
-                    <p className="text-sm text-slate-500">Applicant</p>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editData.applicant || ""}
-                        onChange={(e) => handleInputChange("applicant", e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-1"
-                      />
-                    ) : (
-                      <p className="text-base font-medium">{userData.applicant || "N/A"}</p>
-                    )}
-                    <p className="text-sm text-slate-500 mt-2">Counsel</p>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editData.counselForApplicant || ""}
-                        onChange={(e) => handleInputChange("counselForApplicant", e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-1"
-                      />
-                    ) : (
-                      <p className="text-base font-medium">{userData.counselForApplicant || "N/A"}</p>
-                    )}
-                  </div>
-
-                  <div className="bg-slate-50 p-4 rounded-lg">
-                    <p className="text-sm text-slate-500">Opposite Party</p>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editData.oppositeParty || ""}
-                        onChange={(e) => handleInputChange("oppositeParty", e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-1"
-                      />
-                    ) : (
-                      <p className="text-base font-medium">{userData.oppositeParty || "N/A"}</p>
-                    )}
-                    <p className="text-sm text-slate-500 mt-2">Counsel</p>
+                    <h3 className="font-semibold text-slate-700 mb-2">Key Issue</h3>
                     {isEditing ? (
                       <textarea
-                        value={
-                          Array.isArray(editData.counselForOppositeParty)
-                            ? editData.counselForOppositeParty.join(", ")
-                            : editData.counselForOppositeParty || ""
-                        }
-                        onChange={(e) => handleInputChange("counselForOppositeParty", e.target.value.split(", "))}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-1"
-                        rows="2"
+                        value={editData.keyIssue || ""}
+                        onChange={(e) => handleInputChange("keyIssue", e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        rows={3}
                       />
                     ) : (
-                      <p className="text-base font-medium">
-                        {Array.isArray(userData.counselForOppositeParty)
-                          ? userData.counselForOppositeParty.join(", ")
-                          : userData.counselForOppositeParty || "N/A"}
-                      </p>
+                      <p className="text-slate-600">{userData.keyIssue || "N/A"}</p>
                     )}
                   </div>
                 </div>
               </section>
 
-              {/* Citations */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Citations</h2>
-                <div className="bg-slate-50 p-4 rounded-lg">
-                  <p className="text-sm text-slate-500">Equivalent Citations</p>
-                  {isEditing ? (
-                    <textarea
-                      value={
-                        Array.isArray(editData["Equivalent citations"])
-                          ? editData["Equivalent citations"].join(", ")
-                          : editData["Equivalent citations"] || ""
-                      }
-                      onChange={(e) => handleInputChange("Equivalent citations", e.target.value.split(", "))}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-1"
-                      rows="2"
-                    />
-                  ) : (
-                    <p className="text-base font-medium">
-                      {Array.isArray(userData["Equivalent citations"])
-                        ? userData["Equivalent citations"].join(", ")
-                        : userData["Equivalent citations"] || "N/A"}
-                    </p>
-                  )}
-                </div>
-              </section>
-
-              {/* Full Details */}
-              {userData.fulldetails && Array.isArray(userData.fulldetails) && (
+              {/* Judgment Section */}
+              {userData.judgment && Array.isArray(userData.judgment) && (
                 <section className="space-y-4">
-                  <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Full Details</h2>
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Judgment</h2>
+                    {isEditing && (
+                      <button
+                        onClick={addJudgmentItem}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                      >
+                        Add Judgment
+                      </button>
+                    )}
+                  </div>
                   <div className="space-y-4">
-                    {(isEditing ? editData.fulldetails || [] : userData.fulldetails).map((detail, index) => (
-                      <div key={index} className="bg-slate-50 p-4 rounded-lg">
+                    {(isEditing ? editData.judgment || [] : userData.judgment).map((item, index) => (
+                      <div key={index} className="bg-slate-50 p-4 rounded-lg relative">
+                        {isEditing && (
+                          <button
+                            onClick={() => removeJudgmentItem(index)}
+                            className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm"
+                          >
+                            ×
+                          </button>
+                        )}
                         {isEditing ? (
                           <textarea
-                            value={detail}
+                            value={item || ""}
                             onChange={(e) => {
-                              const newDetails = [...(editData.fulldetails || [])]
-                              newDetails[index] = e.target.value
-                              handleInputChange("fulldetails", newDetails)
+                              const updated = [...(editData.judgment || [])]
+                              updated[index] = e.target.value
+                              handleInputChange("judgment", updated)
                             }}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            rows="3"
+                            rows={3}
+                            placeholder="Enter judgment text"
                           />
                         ) : (
-                          <p className="text-base">{detail}</p>
+                          <p className="text-base text-slate-700">{item}</p>
                         )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Importance Section */}
+              {userData.Importance && Array.isArray(userData. Importance) && (
+                  <section className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Legal Importance</h2>
+                      {isEditing && (
+                        <button
+                          onClick={addImportanceItem}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                        >
+                          Add Point
+                        </button>
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      {(isEditing ? editData.Importance || [] : userData. Importance).map((item, index) => (
+                          <div key={index} className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 relative">
+                            {isEditing && (
+                              <button
+                                onClick={() => removeImportanceItem(index)}
+                                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm"
+                              >
+                                ×
+                              </button>
+                            )}
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={item || ""}
+                                onChange={(e) => handleImportanceChange(index, e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
+                            ) : (
+                              <p className="text-slate-700">{item}</p>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  </section>
+                )}
+
+              {/* Equivalent Citations Section */}
+              {userData.equivalentCitations && Array.isArray(userData.equivalentCitations) && (
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Equivalent Citations</h2>
+                  <div className="space-y-4">
+                    {userData.equivalentCitations.map((citation, index) => (
+                      <div key={index} className="bg-gray-50 p-4 rounded-lg border">
+                        <div className="space-y-2">
+                          <p>
+                            <span className="font-semibold">Also Known As:</span> {citation.alsoKnownAs}
+                          </p>
+                          <p>
+                            <span className="font-semibold">Bench:</span> {citation.bench}
+                          </p>
+                          {citation.judgment &&
+                            citation.judgment.map((judgment, jIndex) => (
+                              <div key={jIndex} className="ml-4 p-2 bg-white rounded border-l-2 border-gray-300">
+                                <p>
+                                  <span className="font-semibold">Key Issue:</span> {judgment.keyIssue}
+                                </p>
+                                <p>
+                                  <span className="font-semibold">Case Name:</span> {judgment.name}
+                                </p>
+                              </div>
+                            ))}
+                          {citation.Importance && (
+                            <div className="ml-4">
+                              <p className="font-semibold">Importance:</p>
+                              <ul className="list-disc list-inside ml-2">
+                                {citation.Importance.map((imp, iIndex) => (
+                                  <li key={iIndex} className="text-slate-600">
+                                    {imp}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -2,40 +2,52 @@ import mongoose from 'mongoose';
 
 const constitutionsSchema = new mongoose.Schema({
   applicationNo: {
-    type: String,  // Changed from Number to String
+    type: String,
     required: true,
     unique: true,
   },
-  applicant: {
+  name: {
     type: String,
     required: true,
   },
-  courtNo: {
-    type: String,  // Changed from Number to String
-    required: true,
-  },
-  oppositeParty: {
+  bench: {
     type: String,
     required: true,
   },
-  counselForApplicant: {
+  alsoKnownAs: {
+    type: String,
+  },
+  keyIssue: {
     type: String,
     required: true,
-  }, 
-  counselForOppositeParty: {
-    type: [String],  // Ensures it can handle arrays
-    default: [],     // Prevents errors if no value is provided
   },
-  Delivereddate: {
-    type: String,
-    required: true, // If always present
+  judgment: {
+    type: [String],
+    required: true,
+  },
+  Importance: {
+    type: [String],
+    required: true,
   },
   "Equivalent citations": {
-    type: [String],  // Supports multiple citations
-    default: [],     // Prevents errors when missing
-  }
+    type: String,
+    default: "",
+  },
+  fileddate: {
+    type: String,
+    default: () => new Date().toISOString().split("T")[0],
+  },
+  courtNo: {
+    type: String,
+    default: "N/A",
+  },
+  inWhichCourt: {
+    type: String,
+    default: "Supreme Court",
+  },
 });
 
-const Constitution = mongoose.models.Constitution || mongoose.model('Constitution', constitutionsSchema);
+const Constitution =
+  mongoose.models.Constitution || mongoose.model('Constitution', constitutionsSchema);
 
 export default Constitution;
