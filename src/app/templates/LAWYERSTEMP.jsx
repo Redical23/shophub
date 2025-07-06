@@ -45,7 +45,7 @@ console.log(users)
               <p className="text-gray-300 text-sm mt-2">{user.specialization}</p>
               <div className="flex justify-between text-sm text-gray-400 mt-3">
                 <span>{user.yearsexp} Years Experience</span>
-                <span>${user.charge}/hour</span>
+                <span>₹{user.charge}/hour</span>
               </div>
               <button className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold transition-all">
                 Schedule Consultation

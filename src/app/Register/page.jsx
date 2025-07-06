@@ -69,7 +69,7 @@ const Register = () => {
         </div>
         <div className="relative z-10 p-8">
         <h1 className="text-2xl font-semibold text-white">Kanoonikarwayahi</h1>
-        <p className="mt-2 text-sm text-white/90">coming soon.</p>
+        {/* <p className="mt-2 text-sm text-white/90">coming soon.</p> */}
         </div>
       </div>
 

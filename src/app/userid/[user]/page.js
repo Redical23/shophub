@@ -2,28 +2,22 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import LAHEAD from "../../slidebar/LAHEAD";
 import { ArrowLeft, Star, Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
 import TrackVisit from "../../slidebar/TrackVisit";
 import Footer from "../../slidebar/FOOTER";
 
 export default function LawyerProfilePage() {
-  const { user } = useParams(); // dynamic route parameter (expected to be the user's _id)
+  const { user } = useParams();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("About");
 
   useEffect(() => {
     async function fetchUserData() {
       try {
-        // Call the API endpoint using the id query parameter
-        const res = await fetch(`/api/pto?id=${user}`, {
-          headers: { Accept: "application/json" }
-        });
-        if (!res.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        // The response is expected to be a single user object
+        const res = await fetch(`/api/pto?id=${user}`);
+        if (!res.ok) throw new Error("Failed to fetch data");
         const data = await res.json();
         setUserData(data);
       } catch (error) {
@@ -35,21 +29,8 @@ export default function LawyerProfilePage() {
     fetchUserData();
   }, [user]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#020B2C] text-white flex items-center justify-center">
-        <h1 className="text-2xl font-bold">Loading...</h1>
-      </div>
-    );
-  }
-
-  if (!userData) {
-    return (
-      <div className="min-h-screen bg-[#020B2C] text-white flex items-center justify-center">
-        <h1 className="text-2xl font-bold">User not found</h1>
-      </div>
-    );
-  }
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
+  if (!userData) return <div className="min-h-screen flex items-center justify-center text-white">User not found</div>;
 
   const {
     name,
@@ -58,95 +39,167 @@ export default function LawyerProfilePage() {
     charge,
     rating,
     avatar,
-    recentCases,
+    recentCases = [],
     bio,
-    areasOfPractice,
+    areasOfPractice = [],
     location,
-    phone
+    phone,
+    education = [],
+    barAdmissions = [],
+    firm,
+    awards = [],
+    publications = [],
   } = userData;
 
+  const tabs = [
+    "About",
+    "Specializations",
+    "Experience",
+    "Education",
+    "Bar Admissions",
+    "Awards",
+    "Publications",
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "About":
+        return <p className="text-gray-300">{bio || "No bio provided."}</p>;
+      case "Specializations":
+        return areasOfPractice.length > 0 ? (
+          <ul className="list-disc pl-4 text-gray-300 space-y-1">
+            {areasOfPractice.map((area, i) => <li key={i}>{area}</li>)}
+          </ul>
+        ) : <p className="text-gray-300">No specializations listed.</p>;
+      case "Experience":
+        return recentCases.length > 0 ? (
+          <ul className="list-disc pl-4 text-gray-300 space-y-1">
+            {recentCases.map((item, i) => (
+              <li key={i}>
+                <strong>{item.title}</strong> ({item.year}) - {item.outcome}
+              </li>
+            ))}
+          </ul>
+        ) : <p className="text-gray-300">No recent cases available.</p>;
+      case "Education":
+        return education.length > 0 ? (
+          <ul className="list-disc pl-4 text-gray-300 space-y-1">
+            {education.map((edu, i) => (
+              <li key={i}><strong>{edu.degree}</strong> — {edu.institution}, {edu.year}</li>
+            ))}
+          </ul>
+        ) : <p className="text-gray-300">No education details.</p>;
+      case "Bar Admissions":
+        return barAdmissions.length > 0 || firm ? (
+          <div className="text-gray-300 space-y-2">
+            {barAdmissions.length > 0 && (
+              <ul className="list-disc pl-4">
+                {barAdmissions.map((item, i) => <li key={i}>{item}</li>)}
+              </ul>
+            )}
+            {firm && <p><strong>Firm:</strong> {firm}</p>}
+          </div>
+        ) : <p className="text-gray-300">No bar admissions listed.</p>;
+      case "Awards":
+        return awards.length > 0 ? (
+          <ul className="list-disc pl-4 text-gray-300 space-y-1">
+            {awards.map((item, i) => <li key={i}>{item}</li>)}
+          </ul>
+        ) : <p className="text-gray-300">No awards available.</p>;
+      case "Publications":
+        return publications.length > 0 ? (
+          <ul className="list-disc pl-4 text-gray-300 space-y-1">
+            {publications.map((item, i) => (
+              <li key={i}>
+                <strong>{item.title}</strong> — {item.journal}, {item.year}
+              </li>
+            ))}
+          </ul>
+        ) : <p className="text-gray-300">No publications available.</p>;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div>
+    <div className="min-h-screen bg-[#020B2C] text-white">
       <TrackVisit userId={user} />
-      
-      <div className="min-h-screen bg-[#020B2C] text-white p-8 flex flex-col items-center">
+      <div className="p-6 max-w-6xl mx-auto">
         <Link
           href="/pruser/homepage"
-          className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-6"
+          className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4"
         >
           <ArrowLeft className="mr-2 h-5 w-5" /> Back to Profiles
         </Link>
-        <div className="w-full max-w-4xl grid md:grid-cols-3 gap-6">
-          {/* Left Column - Profile Info */}
-          <div className="md:col-span-1 bg-white/10 backdrop-blur p-6 rounded-lg shadow-lg">
-            <div className="flex flex-col items-center text-center">
-              <img
-                src={avatar}
-                alt="User avatar"
-                className="w-32 h-32 rounded-full mb-4 border-4 border-blue-500 shadow-lg"
-              />
-              <h1 className="text-2xl font-bold">{name}</h1>
-              <div className="flex items-center gap-2 mt-2 text-yellow-400">
-                <Star className="h-5 w-5" /> <span>{rating}</span>
-              </div>
-              <div className="text-sm text-gray-300 mt-3 space-y-1">
-                <p>{yearsexp} Years Experience</p>
-                <p className="font-semibold">${charge}/hour</p>
-              </div>
-              <Link
-                href={`/lawyer/${email}`}
-                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 py-2 rounded text-white font-semibold text-center"
-              >
-                Schedule Consultation
-              </Link>
-              <div className="space-y-3 mt-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-5 w-5 text-blue-400" /> <span>{email}</span>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* LEFT: Profile Info */}
+          <div className="bg-white/10 p-6 rounded-lg shadow-lg text-center">
+            <img
+              src={avatar}
+              alt="avatar"
+              className="w-32 h-32 mx-auto rounded-full border-4 border-blue-500 shadow mb-4"
+            />
+            <h1 className="text-2xl font-bold">{name}</h1>
+            <div className="text-yellow-400 mt-1 flex justify-center items-center gap-1">
+              <Star className="h-5 w-5" /> <span>{rating}</span>
+            </div>
+            <p className="mt-2 text-gray-300">{yearsexp} Years Experience</p>
+            <p className="text-sm font-semibold">₹{charge}/hour</p>
+            <Link
+              href={`/lawyer/${email}`}
+              className="block mt-4 bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded text-white"
+            >
+              Schedule Consultation
+            </Link>
+            <div className="mt-6 text-sm space-y-2">
+              {email && (
+                <div className="flex items-center justify-center gap-2">
+                  <Mail className="h-4 w-4 text-blue-400" />
+                  <span>{email}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-5 w-5 text-blue-400" /> <span>{phone}</span>
+              )}
+              {phone && (
+                <div className="flex items-center justify-center gap-2">
+                  <Phone className="h-4 w-4 text-blue-400" />
+                  <span>{phone}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-blue-400" /> <span>{location}</span>
+              )}
+              {location && (
+                <div className="flex items-center justify-center gap-2">
+                  <MapPin className="h-4 w-4 text-blue-400" />
+                  <span>{location}</span>
                 </div>
-              </div>
+              )}
             </div>
           </div>
-          {/* Right Column - Details */}
-          <div className="md:col-span-2 flex flex-col gap-6">
-            <div className="bg-white/10 p-6 rounded-lg shadow-lg backdrop-blur">
-              <h2 className="text-xl font-semibold mb-4">About Me</h2>
-              <p className="text-gray-300">{bio}</p>
+
+          {/* RIGHT: Tabs */}
+          <div className="md:col-span-2 flex flex-col">
+            <div className="flex flex-wrap border-b border-gray-600 mb-4">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 text-sm font-semibold border-b-2 transition ${
+                    activeTab === tab
+                      ? "border-blue-400 text-blue-300"
+                      : "border-transparent text-gray-400 hover:text-white"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
+
             <div className="bg-white/10 p-6 rounded-lg shadow-lg backdrop-blur">
-              <h2 className="text-xl font-semibold mb-4">Specializations</h2>
-              {areasOfPractice && areasOfPractice.length > 0 ? (
-                <ul className="list-disc list-inside text-gray-300 space-y-1">
-                  {areasOfPractice.map((area, index) => (
-                    <li key={index}>{area}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-300">No areas of practice available.</p>
-              )}
-            </div>
-            <div className="bg-white/10 p-6 rounded-lg shadow-lg backdrop-blur">
-              <h2 className="text-xl font-semibold mb-4">Work Experience</h2>
-              {recentCases && recentCases.length > 0 ? (
-                <ul className="list-disc list-inside text-gray-300 space-y-1">
-                  {recentCases.map((caseItem, index) => (
-                    <li key={index}>
-                      {caseItem.title} ({caseItem.year}) - {caseItem.outcome}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-300">No recent cases available.</p>
-              )}
+              <h2 className="text-xl font-semibold mb-4">{activeTab}</h2>
+              {renderTabContent()}
             </div>
           </div>
         </div>
       </div>
+
       <Footer />
     </div>
   );
