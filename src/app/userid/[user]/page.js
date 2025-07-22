@@ -155,6 +155,7 @@ export default function LawyerProfilePage() {
             <div className="mt-6 text-sm space-y-2">
               {email && (
                 <div className="flex items-center justify-center gap-2">
+                    ``
                   <Mail className="h-4 w-4 text-blue-400" />
                   <span>{email}</span>
                 </div>
