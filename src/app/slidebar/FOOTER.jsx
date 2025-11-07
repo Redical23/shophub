@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-muted-bg border-t border-border mt-12">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 from-neutral-50 gap-8 mb-8">
           {/* About */}
           <div>
             <h4 className="font-bold text-lg mb-4">ShopHub</h4>
